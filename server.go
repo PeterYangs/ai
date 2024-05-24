@@ -40,7 +40,7 @@ func (c *ChatGptServer) Start() {
 
 	var ks []model.Key
 
-	db.GetDb().Model(&model.Key{}).Where("status = 1 and lock_time = 0").Find(&ks)
+	db.GetDb().Model(&model.Key{}).Where("status = 1 and lock_time = 0 and type = 'gemini'").Find(&ks)
 
 	//if tErr != nil {
 	//
