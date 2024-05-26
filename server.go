@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"geminiDemo/db"
 	"geminiDemo/model"
-	aq "github.com/emirpasic/gods/queues/arrayqueue"
+	aq "github.com/emirpasic/gods/queues/linkedlistqueue"
 	"github.com/google/generative-ai-go/genai"
 	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -223,139 +224,16 @@ func (c *ChatGptServer) logic(key model.Key, wd string, w http.ResponseWriter) {
 
 	}
 
-	w.Write([]byte(content))
+	if strings.Contains(content, "googleapi: Error") {
 
-	//rsp, err := c.client.R().SetHeaders(map[string]string{
-	//	"Authorization": "Bearer " + token.Token,
-	//	"Content-Type":  "application/json",
-	//}).SetBody(map[string]interface{}{
-	//	"model": "gpt-3.5-turbo-16k",
-	//	"messages": []interface{}{
-	//		map[string]interface{}{"role": "user", "content": wd},
-	//	},
-	//}).Post("https://api.openai.com/v1/chat/completions")
-	//
-	////fmt.Println(token.Token)
-	////time.Sleep(3 * time.Second)
-	//
-	//if err != nil {
-	//
-	//	fmt.Println("响应错误：", rsp.String())
-	//
-	//	w.WriteHeader(500)
-	//
-	//	w.Write([]byte(err.Error()))
-	//
-	//	return
-	//}
-	//
-	//if rsp.StatusCode() != 200 {
-	//
-	//	fmt.Println("状态码不等于200", rsp.String())
-	//
-	//	w.WriteHeader(500)
-	//
-	//	if strings.Contains(rsp.String(), "insufficient_quota") {
-	//
-	//		isBack = false
-	//
-	//		db.GetDb().Model(&model.Tokens{}).Where("id = ?", token.Id).Where("status = 1").Updates(map[string]interface{}{"status": 2})
-	//
-	//	} else if strings.Contains(rsp.String(), "The OpenAI account associated with this API key has been deactivated") {
-	//
-	//		//账号被禁
-	//		isBack = false
-	//
-	//		db.GetDb().Model(&model.Tokens{}).Where("id = ?", token.Id).Where("status = 1").Updates(map[string]interface{}{"status": 3})
-	//
-	//	}
-	//
-	//	w.Write([]byte(rsp.String()))
-	//
-	//	return
-	//
-	//}
-	//
-	//type message struct {
-	//	Role    string `json:"role"`
-	//	Content string `json:"content"`
-	//	Index   int    `json:"index"`
-	//}
-	//
-	//type text struct {
-	//	Message message `json:"message"`
-	//}
-	//
-	//type errors struct {
-	//	Message string `json:"message"`
-	//	Type    string `json:"type"`
-	//	Code    string `json:"code"`
-	//}
-	//
-	//type res struct {
-	//	Id      string `json:"id"`
-	//	Model   string `json:"model"`
-	//	Choices []text
-	//	Error   errors `json:"error"`
-	//}
-	//
-	//var r res
-	//
-	//jErr := json.Unmarshal(rsp.Body(), &r)
-	//
-	//if jErr != nil {
-	//
-	//	fmt.Println(jErr)
-	//
-	//	w.WriteHeader(500)
-	//
-	//	w.Write([]byte(jErr.Error()))
-	//
-	//	return
-	//}
-	//
-	//fmt.Println(r)
-	//
-	//if r.Error.Message != "" {
-	//
-	//	w.WriteHeader(500)
-	//
-	//	w.Write([]byte(r.Error.Message))
-	//
-	//	//帐号过期置为2
-	//	if r.Error.Type == "insufficient_quota" {
-	//
-	//		isBack = false
-	//
-	//		db.GetDb().Model(&model.Tokens{}).Where("id = ?", token.Id).Where("status = 1").Updates(map[string]interface{}{"status": 2})
-	//
-	//	}
-	//
-	//	//账号被禁用
-	//	if r.Error.Code == "account_deactivated" {
-	//
-	//		isBack = false
-	//
-	//		db.GetDb().Model(&model.Tokens{}).Where("id = ?", token.Id).Where("status = 1").Updates(map[string]interface{}{"status": 3})
-	//	}
-	//
-	//	return
-	//}
-	//
-	//if len(r.Choices) <= 0 {
-	//
-	//	fmt.Println(rsp.String())
-	//
-	//	w.WriteHeader(500)
-	//
-	//	w.Write([]byte("返回内容为空"))
-	//
-	//	return
-	//}
-	//
-	//w.WriteHeader(200)
-	//
-	//w.Write([]byte(r.Choices[0].Message.Content))
+		w.WriteHeader(500)
+
+		w.Write([]byte(content))
+
+		return
+	}
+
+	w.Write([]byte(content))
 
 }
 
