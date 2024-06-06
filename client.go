@@ -47,9 +47,7 @@ func NewClient(cxt context.Context) *Client {
 
 	client := resty.New()
 
-	//client.R().con
-
-	//client.SetRetryCount(2)
+	client.SetTimeout(2 * time.Minute)
 
 	return &Client{cxt: c, cancel: cancel, config: sync.Map{}, client: client}
 }
@@ -157,6 +155,8 @@ func (c *Client) deal() {
 			k, ok := c.queue.Dequeue()
 
 			if !ok {
+
+				c.cancel()
 
 				return
 			}
@@ -347,7 +347,7 @@ func (c *Client) getConfig(key string) (string, bool) {
 
 	v, ok := c.config.Load(key)
 
-	vv := v.(string)
+	vv := strings.TrimSpace(v.(string))
 
 	return vv, ok
 

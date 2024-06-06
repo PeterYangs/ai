@@ -110,7 +110,7 @@ func (c *ChatGptServer) ProMax(w http.ResponseWriter, req *http.Request) {
 
 			select {
 
-			case <-time.After(time.Second * 15):
+			case <-time.After(time.Minute * 1):
 
 				w.WriteHeader(500)
 
@@ -157,7 +157,7 @@ func (c *ChatGptServer) logic(key model.Key, wd string, w http.ResponseWriter) {
 		if isBack {
 
 			//延迟回队列
-			go c.delay(key, 10*time.Second)
+			go c.delay(key, 1*time.Minute)
 
 		}
 
@@ -170,7 +170,7 @@ func (c *ChatGptServer) logic(key model.Key, wd string, w http.ResponseWriter) {
 	defer can()
 
 	// Access your API key as an environment variable (see "Set up your API key" above)
-	client, err := genai.NewClient(ctx, option.WithAPIKey("AIzaSyDD_bFugU_TFETT-HaC40SAB2PChzmC_dc"))
+	client, err := genai.NewClient(ctx, option.WithAPIKey(key.Key))
 	if err != nil {
 		//log.Fatal(err)
 
