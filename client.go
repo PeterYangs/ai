@@ -381,6 +381,22 @@ func (c *Client) requestGemini(question string) (string, error) {
 
 		rsp, err := c.client.R().SetContext(c.cxt).Get("http://38.207.200.226:8199/gemini?wd=" + question + "&token=UUTuDWCe4l4jfGMwsMnU")
 
+		if err != nil {
+
+			select {
+			case <-c.cxt.Done():
+
+				return "", errors.New("安全退出")
+
+			default:
+
+			}
+
+			fmt.Println("发生错误", err)
+
+			continue
+		}
+
 		if rsp.StatusCode() != 200 {
 
 			select {
@@ -396,22 +412,6 @@ func (c *Client) requestGemini(question string) (string, error) {
 
 			continue
 
-		}
-
-		if err != nil {
-
-			select {
-			case <-c.cxt.Done():
-
-				return "", errors.New("安全退出")
-
-			default:
-
-			}
-
-			fmt.Println(err)
-
-			continue
 		}
 
 		return rsp.String(), nil
